@@ -1,3 +1,4 @@
+// Copyright 2024 binoll
 #pragma once
 
 #include <stdio.h>
@@ -6,16 +7,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+
+#include <linux/blkpg.h>
+#include <linux/magic.h>
 #include <linux/fs.h>
 
-char saving[] = {
-		'/',
-		'-',
-		'\\',
-		'|'
-};
+#include <sys/stat.h>
+#include <sys/statfs.h>
+#include <sys/statvfs.h>
 
-/*A function to save/get a file to/from an empty place in the cluster*/
-__stdcall int8_t save_file(int64_t, int64_t);
+/*A function to proccessing/get a file to/from an empty place in the cluster*/
+int8_t save_file(int64_t, int64_t);
 
-__stdcall int8_t get_file(int64_t, int64_t);
+int8_t get_file(int64_t, int64_t);

@@ -1,15 +1,25 @@
+// Copyright 2024 binoll
 #include "../libs.h"
 
 int8_t save_file(int64_t fd, int64_t cd) {
-	char buf[1024];
-	uint8_t ch = 0;
+	const uint8_t SIZE_BUF = 128;
+	char buf[SIZE_BUF];
+	struct stat* statfbuf = NULL;
+	struct stat* statfsbuf = NULL;
+	struct virtio_blk_config* blk;
 
-	do {
-		printf("Choices:\n0 - exit\n1 - get file\nYour choice: ");
-		ch = getchar() - '0';
+	fstat(fd, statfbuf);
+	fstat(cd, statfsbuf);
 
+	if(statfsbuf->st_blocks * statfsbuf->st_blksize < statfbuf->st_size) {
+		fprintf(stderr, "Size of the file too much!\n");
+		return EXIT_FAILURE;
+	}
 
-	} while(ch != 0);
+	if(read(fd, buf, SIZE_BUF) == 0) {
+		fprintf(stderr, "Can not read file error!\n");
+		return EXIT_FAILURE;
+	}
 
 	return EXIT_SUCCESS;
 }
