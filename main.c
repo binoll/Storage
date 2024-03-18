@@ -1,84 +1,65 @@
-// Copyright 2024 binoll
 #include "libs.h"
 
 int32_t main(int argc, const char* argv[]) {
-	struct statvfs* statvfsbuf;
-	struct statfs* statfsbuf;
-	const uint16_t MAX_PATH_SIZE = 255;
-	char* path_file = NULL;
-	char* path_fs = NULL;
-	int64_t fd = 0, cd = 0;
-	uint8_t ch = 0;
+	const uint32_t MAX_PATH_SIZE = 255;
+	char path_to_file[MAX_PATH_SIZE];
+	char path_to_storage[MAX_PATH_SIZE];
+	FILE* file_ptr;
+	FILE* storage_ptr;
+	char choice;
 
-	if(argc != 3) {
-		fprintf(stderr, "Error! You must use 3 args! "
-		                "Usage: prog[0] catalog(file)_for_storage[1] file_for_save[2]\n");
+	if (argc != 3) {
+		fprintf(stderr, "Usage: %s <file_as_storage> <file_for_save>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
-
-	if(strlen(argv[2]) > MAX_PATH_SIZE ||
-	   strlen(argv[1]) > MAX_PATH_SIZE) {
-		fprintf(stderr, "Error! Your path must be less than 255 characters!\n");
+	if (strlen(argv[2]) > MAX_PATH_SIZE || strlen(argv[1]) > MAX_PATH_SIZE) {
+		fprintf(stderr, "[-] Error! Your path must be less than 255 characters!\n");
 		return EXIT_FAILURE;
 	}
-
-	strcpy(path_file, argv[2]);
-	strcpy(path_fs, argv[1]);
-
-	if((fd = open(path_file, O_RDONLY)) == -1 &&
-	   (cd = open(path_fs, O_RDWR) == -1)) {
-		fprintf(stderr, "Error! Can not open the catalog/file!\n");
-		return EXIT_FAILURE;
-	}
-
-	if(fstatvfs(cd, statvfsbuf) != 0) {
-		close(fd);
-		fprintf(stderr, "Error! Can work with catalog/file!\n");
-		return EXIT_FAILURE;
-	}
-
-	if(statfs(path_file, statfsbuf) != 0) {
-		switch(statfsbuf->f_type) {
-			case EXT4_SUPER_MAGIC: {
-				fprintf(stdout, "Your file system - ext [+]\n");
-				sleep(2000);
-				break;
-			}
-			default: {
-				close(fd);
-				close(cd);
-				fprintf(stderr, "Error! Catalog/file for storage must be ext2-ext4!\n");
-				return EXIT_FAILURE;
-			}
-		}
-	}
+	strcpy(path_to_file, argv[2]);
+	strcpy(path_to_storage, argv[1]);
 
 	do {
-		fprintf(stdout, "Choices:\n0 - exit\n1 - get file\nYour choice: ");
-		ch = getchar() - '0';
+		fprintf(stdout, "Menu:\n\t0 - exit\n\t1 - get your file from the storage\n"
+		                "\t2 - write file to the storage\nYour choice: ");
 
-		switch(ch) {
-			case 0:
+		file_ptr = fopen(path_to_file, "rb");
+		storage_ptr = fopen(path_to_storage, "r+b");
+		if (!file_ptr || !storage_ptr) {
+			fprintf(stderr, "[-] Error! Failed to open the file(s)!\n");
+			if (file_ptr) fclose(file_ptr);
+			if (storage_ptr) fclose(storage_ptr);
+			return EXIT_FAILURE;
+		}
+
+		scanf(" %c", &choice);
+
+		switch (choice - '0') {
+			case 0: {
+				break;
+			}
 			case 1: {
-				fprintf(stdout, "Getting file [+]\n");
-				sleep(2000);
-				get_file(fd, cd);
+				if (get_file(fileno(file_ptr), fileno(storage_ptr)) == 0) {
+					fprintf(stdout, "[+] Getting path_to_file\n");
+				}
 				break;
 			}
 			case 2: {
-				fprintf(stdout, "Saving file [+]\n");
-				sleep(2000);
-				save_file(fd, cd);
+				int32_t file_fd = fileno(file_ptr);
+				int32_t storage_fd = fileno(storage_ptr);
+				save_file(file_fd, storage_fd);
 				break;
 			}
 			default: {
-				fprintf(stderr, "Wrong number! Try again!\n");
+				fprintf(stdout, "[-] Wrong number! Try again!\n");
+				break;
 			}
 		}
-	} while(ch != 0);
 
-	close(fd);
-	close(cd);
+		fclose(file_ptr);
+		fclose(storage_ptr);
+
+	} while (choice != '0');
 
 	return EXIT_SUCCESS;
 }
