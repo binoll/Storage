@@ -18,7 +18,10 @@
 #include <sys/statfs.h>
 #include <sys/statvfs.h>
 
-/*A function to proccessing/get a file to/from an empty place in the cluster*/
-int8_t save_file(int32_t, int32_t);
+#define BUFFER_SIZE 128
+#define MAX_PATH_SIZE 255
 
-int8_t get_file(int32_t, int32_t);
+/*A function to proccessing/get a file to/from an empty place in the cluster*/
+int save_file(int, int, off_t, off_t);
+
+int get_file(int, int, off_t, off_t);

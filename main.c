@@ -1,13 +1,15 @@
 // Copyright 2024 binoll
 #include "libs.h"
 
-int32_t main(int argc, const char* argv[]) {
-	const uint32_t MAX_PATH_SIZE = 255;
+int main(int argc, const char* argv[]) {
 	char path_to_file[MAX_PATH_SIZE];
 	char path_to_storage[MAX_PATH_SIZE];
-	char choice;
-	FILE* file_ptr;
-	FILE* storage_ptr;
+	char choice = '0';
+	FILE* file_ptr = NULL;
+	FILE* storage_ptr = NULL;
+	off_t storage_size = 0;
+	off_t file_size = 0;
+	bool is_saved = false;
 
 	if (argc != 3) {
 		fprintf(stderr, "Usage: %s <file_as_storage> <file_for_save>\n", argv[0]);
@@ -22,19 +24,21 @@ int32_t main(int argc, const char* argv[]) {
 
 	do {
 		fprintf(stdout, "Menu:\n\t0 - exit\n\t1 - get your file from the storage\n"
-		                "\t2 - write file to the storage\nYour choice: ");
+		                "\t2 - write file to the storage");
 
 		file_ptr = fopen(path_to_file, "rb");
 		storage_ptr = fopen(path_to_storage, "r+b");
 		if (!file_ptr || !storage_ptr) {
-			fprintf(stderr, "[-] Error: Failed to open the file(s)!\n");
+			fprintf(stdout, "\n[-] Error: Failed to open the file(s)!\n");
 			if (file_ptr) fclose(file_ptr);
 			if (storage_ptr) fclose(storage_ptr);
 			return EXIT_FAILURE;
 		}
 
+		fprintf(stdout, "\nYour choice: ");
+
 		if (scanf(" %c", &choice) == 0) {
-			fprintf(stderr, "[-] \n");
+			fprintf(stdout, "[-] \n");
 			return -1;
 		}
 
@@ -43,26 +47,29 @@ int32_t main(int argc, const char* argv[]) {
 				break;
 			}
 			case 1: {
-				if (get_file(fileno(file_ptr), fileno(storage_ptr)) == 0) {
-					fprintf(stdout, "[+] Success: Getting path_to_file.\n");
+				if (!is_saved) {
+					fprintf(stdout, "[-] Error: The file was not saved! Save the file first!\n");
+					continue;
 				}
+				int file_fd = fileno(file_ptr);
+				int storage_fd = fileno(storage_ptr);
+				get_file(file_fd, storage_fd, file_size, storage_size);
 				break;
 			}
 			case 2: {
-				int32_t file_fd = fileno(file_ptr);
-				int32_t storage_fd = fileno(storage_ptr);
-				save_file(file_fd, storage_fd);
+				int file_fd = fileno(file_ptr);
+				int storage_fd = fileno(storage_ptr);
+				save_file(file_fd, storage_fd, file_size, storage_size);
+				is_saved = true;
 				break;
 			}
 			default: {
-				fprintf(stderr, "[-] Error: Wrong number! Try again!\n");
+				fprintf(stdout, "[-] Error: Wrong number! Try again!\n");
 				break;
 			}
 		}
-
 		fclose(file_ptr);
 		fclose(storage_ptr);
-
 	} while (choice != '0');
 
 	return EXIT_SUCCESS;
