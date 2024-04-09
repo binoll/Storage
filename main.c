@@ -71,6 +71,5 @@ int main(int argc, const char* argv[]) {
 		fclose(file_ptr);
 		fclose(storage_ptr);
 	} while (choice != '0');
-
 	return EXIT_SUCCESS;
 }
