@@ -21,7 +21,6 @@
 #define BUFFER_SIZE 128
 #define MAX_PATH_SIZE 255
 
-/*A function to proccessing/get a file to/from an empty place in the cluster*/
 int save_file(int, int, off_t, off_t, off_t);
 
 int get_file(int, int, off_t, off_t);
