@@ -30,10 +30,5 @@ int get_file(int file_fd, int storage_fd, off_t file_size, off_t storage_size) {
 	while (read(file_fd, buffer, BUFFER_SIZE) > 0) {
 		fprintf(stdout, "%s", buffer);
 	}
-
-	if (lseek(file_fd, 0, SEEK_SET) == -1) {
-		fprintf(stdout, "[-] Error: Failed to seek input file to the beginning.");
-		return -1;
-	}
 	return EXIT_SUCCESS;
 }
