@@ -1,7 +1,7 @@
 // Copyright 2024 binoll
 #include "../libs.h"
 
-int save_file(int file_fd, int storage_fd, off_t file_size, off_t storage_size) {
+int save_file(int file_fd, int storage_fd, off_t file_size, off_t storage_size, off_t offset) {
 	struct statvfs fs_info;
 	struct flock perms;
 	char buffer[BUFFER_SIZE];
@@ -37,7 +37,7 @@ int save_file(int file_fd, int storage_fd, off_t file_size, off_t storage_size) 
 		return -1;
 	}
 
-	if (lseek(storage_fd, 10, SEEK_END) == -1) {
+	if (lseek(storage_fd, offset, SEEK_END) == -1) {
 		fprintf(stdout, "[-] Error: Failed to seek storage file to the end.");
 		return -1;
 	}
