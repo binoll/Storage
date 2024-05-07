@@ -55,8 +55,6 @@ int main(int argc, const char* argv[]) {
 				int file_fd = fileno(file_ptr);
 				int storage_fd = fileno(storage_ptr);
 				get_file(file_fd, storage_fd, file_size, offset);
-				close(file_fd);
-				close(storage_fd);
 				break;
 			}
 			case 2: {
@@ -64,8 +62,6 @@ int main(int argc, const char* argv[]) {
 				int storage_fd = fileno(storage_ptr);
 				save_file(file_fd, storage_fd, file_size, storage_size, offset);
 				is_saved = true;
-				close(file_fd);
-				close(storage_fd);
 				break;
 			}
 			default: {
