@@ -12,6 +12,7 @@ int save_file(int file_fd, int storage_fd, off_t file_size, off_t storage_size, 
 		fprintf(stdout, "[-] Error: Failed to get filesystem information.");
 		return -1;
 	}
+
 	block_size = fs_info.f_frsize;
 
 	storage_size = lseek(storage_fd, 0, SEEK_END);
@@ -19,6 +20,7 @@ int save_file(int file_fd, int storage_fd, off_t file_size, off_t storage_size, 
 		fprintf(stdout, "[-] Error: Failed to get size of storage file.");
 		return -1;
 	}
+
 	file_size = lseek(file_fd, 0, SEEK_END);
 	if (file_size == -1) {
 		fprintf(stdout, "[-] Error: Failed to get size of input file.");
@@ -37,7 +39,7 @@ int save_file(int file_fd, int storage_fd, off_t file_size, off_t storage_size, 
 		return -1;
 	}
 
-	if (lseek(storage_fd, offset, SEEK_END) == -1) {
+	if (lseek(storage_fd, 0, SEEK_END) == -1 && lseek(storage_fd, offset, SEEK_CUR) == -1) {
 		fprintf(stdout, "[-] Error: Failed to seek storage file to the end.");
 		return -1;
 	}
@@ -48,20 +50,11 @@ int save_file(int file_fd, int storage_fd, off_t file_size, off_t storage_size, 
 			fprintf(stdout, "[-] Error: Failed to write data to storage file.");
 			return -1;
 		}
+
 		if (bytes_written != bytes_read) {
 			fprintf(stdout, "[-] Error: Incomplete write to storage file.\n");
 			return -1;
 		}
-	}
-
-	perms.l_type = F_WRLCK;
-	perms.l_whence = SEEK_END;
-	perms.l_start = 0;
-	perms.l_len = 0;
-
-	if (fcntl(storage_fd, F_SETLK, &perms) == -1) {
-		fprintf(stdout, "[-] Error: Failed to lock the file storage.");
-		return -1;
 	}
 
 	fprintf(stdout, "[+] Success: The file has been saved! Free space in the block: %lu bytes.\n",

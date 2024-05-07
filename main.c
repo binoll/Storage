@@ -13,7 +13,7 @@ int main(int argc, const char* argv[]) {
 	off_t offset = 10;
 
 	if (argc != 3) {
-		fprintf(stderr, "Usage: %s <file_as_storage> <file_for_save>\n", argv[0]);
+		fprintf(stderr, "Usage: %s (file_as_storage) (file_for_save)\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 	if (strlen(argv[2]) > MAX_PATH_SIZE || strlen(argv[1]) > MAX_PATH_SIZE) {
