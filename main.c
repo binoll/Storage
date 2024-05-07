@@ -7,10 +7,9 @@ int main(int argc, const char* argv[]) {
 	char choice = '0';
 	FILE* file_ptr = NULL;
 	FILE* storage_ptr = NULL;
-	off_t storage_size = 0;
-	off_t file_size = 0;
-	bool is_saved = false;
-	off_t offset = 10;
+	off_t storage_size;
+	off_t file_size;
+	off_t offset = 100;
 
 	if (argc != 3) {
 		fprintf(stderr, "Usage: %s (file_as_storage) (file_for_save)\n", argv[0]);
@@ -36,6 +35,26 @@ int main(int argc, const char* argv[]) {
 			return EXIT_FAILURE;
 		}
 
+		int file_fd = fileno(file_ptr);
+		int storage_fd = fileno(storage_ptr);
+
+		storage_size = lseek(storage_fd, 0, SEEK_END);
+		if (storage_size < 0) {
+			fprintf(stdout, "[-] Error: Failed to get size of storage file\n");
+			return -1;
+		}
+
+		file_size = lseek(file_fd, 0, SEEK_END);
+		if (file_size < 0) {
+			fprintf(stdout, "[-] Error: Failed to get size of input file\n");
+			return -1;
+		}
+
+		if (lseek(storage_fd, 0, SEEK_SET) < 0 || lseek(file_fd, 0, SEEK_SET) < 0) {
+			fprintf(stdout, "[-] Error: Failed to seek a ptr of the file\n");
+			return -1;
+		}
+
 		fprintf(stdout, "\nYour choice: ");
 
 		if (scanf(" %c", &choice) == 0) {
@@ -48,20 +67,11 @@ int main(int argc, const char* argv[]) {
 				break;
 			}
 			case 1: {
-				if (!is_saved) {
-					fprintf(stdout, "[-] Error: The file was not saved! Save the file first!\n");
-					continue;
-				}
-				int file_fd = fileno(file_ptr);
-				int storage_fd = fileno(storage_ptr);
 				get_file(file_fd, storage_fd, file_size, offset);
 				break;
 			}
 			case 2: {
-				int file_fd = fileno(file_ptr);
-				int storage_fd = fileno(storage_ptr);
 				save_file(file_fd, storage_fd, file_size, storage_size, offset);
-				is_saved = true;
 				break;
 			}
 			default: {
@@ -72,5 +82,6 @@ int main(int argc, const char* argv[]) {
 		fclose(file_ptr);
 		fclose(storage_ptr);
 	} while (choice != '0');
+
 	return EXIT_SUCCESS;
 }
