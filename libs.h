@@ -22,4 +22,4 @@
 
 int save_file(int, int, off_t, off_t, off_t);
 
-int get_file(int, int, off_t, off_t);
+int get_file(int, off_t, off_t);
