@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/save.dir/main.c.o CMakeFiles/save.dir/save_file.c.o -o save 

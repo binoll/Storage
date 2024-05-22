@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/get.dir/main.c.o CMakeFiles/get.dir/get_file.c.o -o get 

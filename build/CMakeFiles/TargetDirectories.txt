@@ -1,0 +1,8 @@
+/home/binoll/Desktop/Storage/build/CMakeFiles/edit_cache.dir
+/home/binoll/Desktop/Storage/build/CMakeFiles/rebuild_cache.dir
+/home/binoll/Desktop/Storage/build/get/CMakeFiles/get.dir
+/home/binoll/Desktop/Storage/build/get/CMakeFiles/edit_cache.dir
+/home/binoll/Desktop/Storage/build/get/CMakeFiles/rebuild_cache.dir
+/home/binoll/Desktop/Storage/build/save/CMakeFiles/save.dir
+/home/binoll/Desktop/Storage/build/save/CMakeFiles/edit_cache.dir
+/home/binoll/Desktop/Storage/build/save/CMakeFiles/rebuild_cache.dir
